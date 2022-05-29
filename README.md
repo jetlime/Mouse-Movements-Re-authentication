@@ -14,8 +14,8 @@ This repository is licensed under the MIT license.
 
 Paul Houssel - Student of the University of Luxembourg
 
-## Acknowledgements
+## Acknowledgements and References
 
 The work was supported by the University of Luxembourg and Luis. Leiva
 
-The dataset used in this work is available [here](https://github.com/balabit/Mouse-Dynamics-Challenge)
+The dataset used in this work is available [here](https://github.com/balabit/Mouse-Dynamics-Challenge).
