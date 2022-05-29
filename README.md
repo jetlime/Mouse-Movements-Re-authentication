@@ -1,6 +1,6 @@
 # User authentication based on Mouse Movements  
 
-
+This repository is licensed under the MIT license.
 ## Requirements
 
 ## Training the model
