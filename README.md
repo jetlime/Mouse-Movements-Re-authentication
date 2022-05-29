@@ -1,16 +1,16 @@
-### User authentication based on Mouse Movements  
+# User authentication based on Mouse Movements  
 
 
-# Requirements
+## Requirements
 
-# Training the model
+## Training the model
 
-# Evaluating the model
+## Evaluating the model
 
-# Author
+## Author
 
 Paul Houssel - Student of the University of Luxembourg
 
-# Acknowledgements
+## Acknowledgements
 
 The work was supported by the University of Luxembourg and Luis. Leiva
