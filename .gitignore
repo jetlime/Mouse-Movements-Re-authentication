@@ -3,8 +3,6 @@ Report/
 stats/
 Multi-User-Prediction/  
 coordinate-visualisation/
-Alldata-final-model-validation_Training.py  MinDatafinal-model-validation_Eval.py  experimentB  experimentD-a    model-alluser-validation               models-allusers-validation-Tensorboard
-MinData-final-model-validation_Training.py  experimentA                            experimentC  experimentD-bis  model-alluser-validation-testing-sets  
 Anomaly-detection-allusers/stats.py
 Anomaly-detection-allusers/MinDatafinal-model-validation_Eval.py
 Anomaly-detection-allusers/MinData-final-model-validation_Training.py
