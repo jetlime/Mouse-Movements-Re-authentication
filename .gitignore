@@ -13,3 +13,5 @@ Anomaly-detection-allusers/**/stats.py
 Anomaly-detection-allusers/**/final-model.png
 Anomaly-detection-allusers/experimentB/balanced-models/*
 Anomaly-detection-allusers/experimentB/tensorboard.tar.gz
+
+!Anolaly-detection-allusers/**/models/.gitkeep
