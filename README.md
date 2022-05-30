@@ -11,7 +11,12 @@ In order to correctly execute the experiments, and to obtain the same reported r
 - Tensorflow in the version 2.7.0 shall be installed
 
 ## Training the model
-
+For every experiment, in order to obtain the results, the models need to be trained with the following command
+```python3 ./experiment<ExperimentID>/training.py```
+Once executed, the script created the three following folders,
+- **./models**, every model for every user is saved in this folder. Every model is saved as follows, **user<#User>-fold-<#ofthefold>**.
+- **./models-testingsets**: for every trained model, the corresponding testing dataset and labels are saved in this folder under a numpy file. Every testing set is saved as follows, **user<#User>-fold-<#ofthefold>-test-X.npy**. Every testing label, is saved as follows,**user<#User>-fold-<#ofthefold>-test-Y.npy**.
+- **./models-Tensorboard**: in this folder, the training history of the trained model are saved, in order to be used by Tensorboard, which allows you visualise the training history and metrics. Each trained model has its own subfolder, saved as follows, **user<#User>-fold-<#ofthefold>**.
 ## Evaluating the model
 - Computing the evaluation metrics: 
 
