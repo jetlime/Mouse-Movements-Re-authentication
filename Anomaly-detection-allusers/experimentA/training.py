@@ -10,7 +10,7 @@ with the distribution of the experiment A.
 from pandas import set_option,read_csv, read_table, DataFrame
 from numpy import random, save, array
 from random import seed
-from os import environ, listdir, path
+from os import environ, listdir, path, mkdir
 # Import from the ML framework
 from tensorflow import reshape
 from tensorflow.random import set_seed
@@ -148,33 +148,40 @@ def createDataset(user):
                         previous_data = data_tmp
     return X_dataset, Y_dataset
 
-# For every user, the models will be created and trained with 5 datasets
-# (which each have different training and testing sets)
-# in order to obtain a more widespread view of the model when it comes to 
-# evaluating it
-for user in users:
-    # 5-fold validation to record the correct metrics
-    for fold in range(5):
-        # Name of the file where the trained model will be stored
-        NAME = "{}-fold-{}".format(user,fold+1)
-        X_dataset, Y_dataset = createDataset(user)
-        # Divice the above created dataset into training and testing set
-        X_train, X_test, Y_train, Y_test = train_test_split(X_dataset, Y_dataset, test_size=0.1, random_state=42, stratify=Y_dataset)
-        Y_train = reshape(Y_train, [len(Y_train), 1])
-        Y_test = reshape(Y_test, [len(Y_test), 1])
-        X_test = array(X_test, dtype=int)
-        X_train = array(X_train, dtype=int)
-        X_test = array(X_test, dtype=int)
-        model = None
-        model = create_gru_model(X_train[0].shape)
-        model.compile(loss='binary_crossentropy', optimizer=Adam(0.0001), metrics=['accuracy'])
-        # Train the model
-        model.fit(X_train, Y_train, epochs = 400, batch_size =150, verbose = 1, shuffle = True, validation_split=0.1, callbacks = [EarlyStopping(patience=40, verbose=1,restore_best_weights=True, monitor='val_loss', mode='auto'),TensorBoard("models-Tensorboard/{}".format(NAME), profile_batch=0),])
-        # Save the model once training is done.
-        model_file = path.join("models", '{}.h5'.format(NAME))
-        model.save(model_file)
-        # Save the testing dataset into a txt file to be used for correct validation 
-        save(path.join("models-testingsets", filename + "-test-X"), X_test)
-        save(path.join("models-testingsets", filename + "-test-Y"), Y_test)
-        print('Model saved as {}'.format(model_file))
-        print('Testing Set saved in a numpy file.')
+
+
+if __name__ == __main__:
+    # Create the needed directories for this experiment
+    os.mkdir("models")
+    os.mkdir("models-testingsets")
+    os.mkdir("models-Tensorboard")
+    # For every user, the models will be created and trained with 5 datasets
+    # (which each have different training and testing sets)
+    # in order to obtain a more widespread view of the model when it comes to 
+    # evaluating it
+    for user in users:
+        # 5-fold validation to record the correct metrics
+        for fold in range(5):
+            # Name of the file where the trained model will be stored
+            NAME = "{}-fold-{}".format(user,fold+1)
+            X_dataset, Y_dataset = createDataset(user)
+            # Divice the above created dataset into training and testing set
+            X_train, X_test, Y_train, Y_test = train_test_split(X_dataset, Y_dataset, test_size=0.1, random_state=42, stratify=Y_dataset)
+            Y_train = reshape(Y_train, [len(Y_train), 1])
+            Y_test = reshape(Y_test, [len(Y_test), 1])
+            X_test = array(X_test, dtype=int)
+            X_train = array(X_train, dtype=int)
+            X_test = array(X_test, dtype=int)
+            model = None
+            model = create_gru_model(X_train[0].shape)
+            model.compile(loss='binary_crossentropy', optimizer=Adam(0.0001), metrics=['accuracy'])
+            # Train the model
+            model.fit(X_train, Y_train, epochs = 400, batch_size =150, verbose = 1, shuffle = True, validation_split=0.1, callbacks = [EarlyStopping(patience=40, verbose=1,restore_best_weights=True, monitor='val_loss', mode='auto'),TensorBoard("models-Tensorboard/{}".format(NAME), profile_batch=0),])
+            # Save the model once training is done.
+            model_file = path.join("models", '{}.h5'.format(NAME))
+            model.save(model_file)
+            # Save the testing dataset into a txt file to be used for correct validation 
+            save(path.join("models-testingsets", filename + "-test-X"), X_test)
+            save(path.join("models-testingsets", filename + "-test-Y"), Y_test)
+            print('Model saved as {}'.format(model_file))
+            print('Testing Set saved in a numpy file.')
