@@ -63,22 +63,22 @@ for model_file_name in listdir(base_dir):
     # obtain the testing set from the given model
     X_test = load(path.join("models-testingsets", model_file_name[:-3] + "-test-X.npy"))
     Y_test = load(path.join("models-testingsets", model_file_name[:-3] + "-test-Y.npy"))
-    for user in models_acc:
-        if user in model_file_name:
-            Y_pred = loaded_model.predict(X_test).ravel()
-            metrics = eval_binary_classifier(Y_test,Y_pred)
-            models_auc[user].append(metrics["auc_weighted"])
-            models_acc[user].append(metrics["balanced_acc"])
-            models_eer[user].append(metrics["eer"])
+    # Extract the user id
+    user = model_file_name.split("-")[0].split("r")[1]
+    Y_pred = loaded_model.predict(X_test).ravel()
+    metrics = eval_binary_classifier(Y_test,Y_pred)
+    models_auc[user].append(metrics["auc_weighted"])
+    models_acc[user].append(metrics["balanced_acc"])
+    models_eer[user].append(metrics["eer"])
 
 for model in models_auc:
     models_auc_mean[model] = mean(models_auc[model])
 
 for model in models_acc:
-    models_acc_mean[model] = mean(models_acc[model]) 
+    models_acc_mean[model] = mean(models_acc[model])
 
 for model in models_eer:
-    models_eer_mean[model] = mean(models_eer[model]) 
+    models_eer_mean[model] = mean(models_eer[model])
 
 
 print("     EER, Balanced Accuracy, Weighted AUC score")
@@ -89,7 +89,7 @@ print("Average over all users:")
 lst = []
 for model in models_auc_mean:
     lst.append(models_auc_mean[model])
-print("EER avg.: " + str(round(mean(lst),4)))
+print("Weitghted AUC avg.: " + str(round(mean(lst),4)))
 
 lst=[]
 
@@ -101,5 +101,5 @@ lst = []
 
 for model in models_eer_mean:
     lst.append(models_eer_mean[model])
-print("Weighted AUC score avg: "+ str(round(mean(lst),4)))
+print("EER avg: "+ str(round(mean(lst),4)))
 

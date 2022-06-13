@@ -7,18 +7,22 @@
 This python script serves to train the models for every user
 with the distribution of the experiment A.
 """
+
 from pandas import set_option,read_csv, read_table, DataFrame
+from os import environ, listdir, path, mkdir
 from numpy import random, save, array
 from random import seed
-from os import environ, listdir, path, mkdir
+
 # Import from the ML framework
 from tensorflow import reshape
 from tensorflow.random import set_seed
 from tensorflow.keras import Sequential
+from tensorflow.keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 from keras.layers import GRU, Bidirectional, Dense, Dropout, Input
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.callbacks import EarlyStopping, Tensorboard
+from tensorflow.keras.callbacks import EarlyStopping, TensorBoard
+
+
 # Ignore the Tensorflow Informations and Warning
 environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 
@@ -42,7 +46,7 @@ random.seed(my_seed)
 set_seed(my_seed)
 
 # Implementation of the Classifier Model
-def create_gru_model(shape):
+def createGruModel(shape):
     model = Sequential([ Input(shape=shape)])
     recurrent_block1 = GRU(200, activation="tanh", return_sequences=True)
     recurrent_block1 = Bidirectional(recurrent_block1)
@@ -59,7 +63,7 @@ def create_gru_model(shape):
 
 # Fetch the session file, to transform it into a modifible dataframe
 def cleanSession(session,user):
-    data = read_table( base_dir + str(user + session, sep=',')
+    data = read_table(path.join(base_dir, str(user), session), sep=',')
     # Convert and round up the data
     set_option('display.float_format', lambda x: '%.5f' % x)
     data.round(5)
@@ -90,6 +94,14 @@ def normalisedOverTime(data):
     data.drop(["x","y", "client timestamp"],axis=1,inplace=True)
     return data
 
+# find out if the session of the given user is illegal or not
+def sessionIsIllegal(df, session):
+    try:
+        return (df.loc[df['filename'] == session].is_illegal.values[0])
+    except :
+        return None
+
+
 # Create the dataset for every user
 # Binary Labels
 # O: Legal Data ; 1: Illegal Data
@@ -105,7 +117,7 @@ def createDataset(user):
     sessions = listdir(base_dir+str(user))
     for session in sessions:
         # If the session is Illegal
-        if findSessionLabelIsIllegal(labels, session) == 1:
+        if sessionIsIllegal(labels, session) == 1:
             data = cleanSession(session,user)
             i = 0
             while True :
@@ -150,17 +162,18 @@ def createDataset(user):
 
 
 
-if __name__ == __main__:
+if __name__ == "__main__":
     # Create the needed directories for this experiment
-    os.mkdir("models")
-    os.mkdir("models-testingsets")
-    os.mkdir("models-Tensorboard")
+    print("...Creating necessary folders...")
+    mkdir("models")
+    mkdir("models-testingsets")
+    mkdir("models-Tensorboard")
     # For every user, the models will be created and trained with 5 datasets
     # (which each have different training and testing sets)
     # in order to obtain a more widespread view of the model when it comes to 
     # evaluating it
     for user in users:
-        # 5-fold validation to record the correct metrics
+        # 5-fold validation to record a good overview of the model
         for fold in range(5):
             # Name of the file where the trained model will be stored
             NAME = "{}-fold-{}".format(user,fold+1)
@@ -173,7 +186,7 @@ if __name__ == __main__:
             X_train = array(X_train, dtype=int)
             X_test = array(X_test, dtype=int)
             model = None
-            model = create_gru_model(X_train[0].shape)
+            model = createGruModel(X_train[0].shape)
             model.compile(loss='binary_crossentropy', optimizer=Adam(0.0001), metrics=['accuracy'])
             # Train the model
             model.fit(X_train, Y_train, epochs = 400, batch_size =150, verbose = 1, shuffle = True, validation_split=0.1, callbacks = [EarlyStopping(patience=40, verbose=1,restore_best_weights=True, monitor='val_loss', mode='auto'),TensorBoard("models-Tensorboard/{}".format(NAME), profile_batch=0),])
@@ -181,7 +194,7 @@ if __name__ == __main__:
             model_file = path.join("models", '{}.h5'.format(NAME))
             model.save(model_file)
             # Save the testing dataset into a txt file to be used for correct validation 
-            save(path.join("models-testingsets", filename + "-test-X"), X_test)
-            save(path.join("models-testingsets", filename + "-test-Y"), Y_test)
+            save(path.join("models-testingsets", NAME + "-test-X"), X_test)
+            save(path.join("models-testingsets", NAME + "-test-Y"), Y_test)
             print('Model saved as {}'.format(model_file))
             print('Testing Set saved in a numpy file.')
