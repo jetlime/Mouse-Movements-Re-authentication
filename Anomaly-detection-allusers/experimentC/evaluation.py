@@ -13,7 +13,7 @@ The training.py script should be executed before this script.
 from os import path, listdir, environ
 from tensorflow import keras
 from numpy import absolute, nanargmin, array, load
-from sklearn.metrics import balanced_accuracy_score, roc_auc_score, roc_curve
+from sklearn.metrics import accuracy_score, roc_auc_score, roc_curve
 from statistics import mean
 
 # Ignore the Tensorflow Informations and Warnings
@@ -50,9 +50,9 @@ def eval_binary_classifier(y_true, y_pred, class_weights=None):
 
 base_dir = "models"
 
-models_auc = {"user7": [], "user9":[], "user12":[], "user15":[],"user16":[],"user20":[], "user21":[], "user23":[],'user29':[],"user35":[]}
-models_acc = {"user7": [], "user9":[], "user12":[], "user15":[],"user16":[],"user20":[], "user21":[], "user23":[],'user29':[],"user35":[]}
-models_eer ={"user7": [], "user9":[], "user12":[], "user15":[],"user16":[],"user20":[], "user21":[], "user23":[],'user29':[],"user35":[]}
+models_auc = {"7": [], "9":[], "12":[], "15":[],"16":[],"20":[], "21":[], "23":[],'29':[],"35":[]}
+models_acc = {"7": [], "9":[], "12":[], "15":[],"16":[],"20":[], "21":[], "23":[],'29':[],"35":[]}
+models_eer = {"7": [], "9":[], "12":[], "15":[],"16":[],"20":[], "21":[], "23":[],'29':[],"35":[]}
 models_auc_mean = {}
 models_acc_mean = {}
 models_eer_mean = {}
@@ -63,22 +63,22 @@ for model_file_name in listdir(base_dir):
     # obtain the testing set from the given model
     X_test = load(path.join("models-testingsets", model_file_name[:-3] + "-test-X.npy"))
     Y_test = load(path.join("models-testingsets", model_file_name[:-3] + "-test-Y.npy"))
-    for user in models_acc:
-        if user in model_file_name:
-            Y_pred = loaded_model.predict(X_test).ravel()
-            metrics = eval_binary_classifier(Y_test,Y_pred)
-            models_auc[user].append(metrics["auc_macro"])
-            models_acc[user].append(metrics["acc"])
-            models_eer[user].append(metrics["eer"])
+    # Extract the user id
+    user = model_file_name.split("-")[0].split("r")[1]
+    Y_pred = loaded_model.predict(X_test).ravel()
+    metrics = eval_binary_classifier(Y_test,Y_pred)
+    models_auc[user].append(metrics["auc_macro"])
+    models_acc[user].append(metrics["acc"])
+    models_eer[user].append(metrics["eer"])
 
 for model in models_auc:
     models_auc_mean[model] = mean(models_auc[model])
 
 for model in models_acc:
-    models_acc_mean[model] = mean(models_acc[model]) 
+    models_acc_mean[model] = mean(models_acc[model])
 
 for model in models_eer:
-    models_eer_mean[model] = mean(models_eer[model]) 
+    models_eer_mean[model] = mean(models_eer[model])
 
 
 print("     EER,Accuracy, AUC score")
@@ -89,7 +89,7 @@ print("Average over all users:")
 lst = []
 for model in models_auc_mean:
     lst.append(models_auc_mean[model])
-print("EER avg.: " + str(round(mean(lst),4)))
+print("AUC avg.: " + str(round(mean(lst),4)))
 
 lst=[]
 
@@ -101,4 +101,4 @@ lst = []
 
 for model in models_eer_mean:
     lst.append(models_eer_mean[model])
-print("Weighted AUC score avg: "+ str(round(mean(lst),4)))
+print("Avg. EER: "+ str(round(mean(lst),4)))
