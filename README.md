@@ -47,7 +47,7 @@ Paul Houssel - Student of the University of Luxembourg
 
 ## Acknowledgements and References
 
-The work was supported by the University of Luxembourg and Luis. Leiva
+The work was supported by the University of Luxembourg and Luis A. Leiva
 
-- The dataset used in this work is available [here](https://github.com/balabit/Mouse-Dynamics-Challenge).
-- Image used in the **Evaluating the model** folder, ![source](https://www.tensorflow.org/tensorboard)
+- The dataset used in this work is available on Github, [source](https://github.com/balabit/Mouse-Dynamics-Challenge).
+- Image used in the section entitled, **Evaluating the model** , [source](https://www.tensorflow.org/tensorboard).
