@@ -5,7 +5,7 @@
 
 """
 This python script serves to train the models for every user
-with the distribution of the experiment D-a.
+with the distribution of the experiment D-bis.
 """
 
 from pandas import set_option,read_csv, read_table, DataFrame
@@ -30,10 +30,10 @@ from keras.preprocessing.sequence import pad_sequences
 environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 
 # Directory of the Dataset
-base_dir = '../../data/'
+base_dir = '../data/'
 
 # Define the labels
-labels = read_csv('../../public_labels.csv')
+labels = read_csv('../public_labels.csv')
 
 # List of all the users in the dataset
 users = ["user7", "user9", "user12", "user15", "user16", "user20","user21","user23","user29","user35"]
@@ -70,13 +70,13 @@ labels = read_csv('../../public_labels.csv')
 # Fetch the session file, to transform it into a modifible dataframe
 def cleanSession(session,user):
     data = read_table(path.join(base_dir, str(user), session), sep=',')
-    # Convert and round up the data
-    set_option('display.float_format', lambda x: '%.5f' % x)
-    data.round(5)
     # Remove the columns not needed by our model
     data.drop("button", axis=1, inplace=True)
     data.drop("state", axis=1, inplace=True)
     data.drop('record timestamp', axis=1, inplace=True)
+    # Convert and round up the data
+    set_option('display.float_format', lambda x: '%.5f' % x)
+    data.round(5)
     return data
 
 # Normalise the mouse coordinates over time
@@ -191,13 +191,6 @@ def createDataset(user):
                 i = 0
                 data = cleanSession(session,user)
                 if data[i:i+300].shape[0] < 300 :
-                    # Define the sessions to be padded
-                    data_tmp  = data[i:i+300].reset_index()
-                    # reset the index from 0 and remove the timesteps
-                    data_tmp = normalisedOverTime(data_tmp)
-                    # Data below 300 timestamps, normalised, it has x < 300 rows
-                    sessions_to_pad_dx.append(list(array(data_tmp["dx"])))
-                    sessions_to_pad_dy.append(list(array(data_tmp["dy"])))
                     break
                 else :
                     is_legal += 1
@@ -212,19 +205,6 @@ def createDataset(user):
                         break
                     else :
                         previous_data = data_tmp
-
-    # Padd the sessions to a number of 300 timestamps
-    # The sequences are pre padded with null values
-    paddedsession_dx = pad_sequences(sessions_to_pad_dx, maxlen=300)
-    paddedsession_dy = pad_sequences(sessions_to_pad_dy, maxlen=300)
-
-    # Add the padded sessions to the dataset
-    for i in range(0,len(sessions_to_pad_dy)):
-        is_legal += 1
-        data = DataFrame({"dx":paddedsession_dx[i], "dy":paddedsession_dy[i]})
-        X_dataset.append(array(data))
-        Y_dataset.append(0)
-
 
     # Compute how many illegal data sequences are needed to balance the dataset
     numberoflegalinput = Counter(Y_dataset)[0]
@@ -266,7 +246,7 @@ if __name__ == "__main__":
             model = createGruModel(X_train[0].shape)
             model.compile(loss='binary_crossentropy', optimizer=Adam(0.0001), metrics=['accuracy'])
             # Train the model
-            model.fit(X_train, Y_train, epochs = 400, batch_size =150, verbose = 1, shuffle = True, validation_split=0.1, callbacks = [EarlyStopping(patience=40, verbose=1,restore_best_weights=True, monitor='val_loss', mode='auto'),TensorBoard("models-Tensorboard/{}".format(NAME), profile_batch=0),])
+            model.fit(X_train, Y_train, epochs = 400, batch_size =150, verbose = 1, shuffle = True, validation_split=0.1,class_weight=class_weight ,callbacks = [EarlyStopping(patience=40, verbose=1,restore_best_weights=True, monitor='val_loss', mode='auto'),TensorBoard("models-Tensorboard/{}".format(NAME), profile_batch=0),])
             # Save the model once training is done.
             model_file = path.join("models-new", '{}.h5'.format(NAME))
             model.save(model_file)

@@ -27,10 +27,10 @@ from tensorflow.keras.callbacks import EarlyStopping, TensorBoard
 environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 
 # Directory of the Dataset
-base_dir = '../../data/'
+base_dir = '../data/'
 
 # Define the labels
-labels = read_csv('../../public_labels.csv')
+labels = read_csv('../public_labels.csv')
 
 # List of all the users in the dataset
 users = ["user7", "user9", "user12", "user15", "user16", "user20","user21","user23","user29","user35"]

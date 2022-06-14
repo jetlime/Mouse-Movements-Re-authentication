@@ -11,7 +11,7 @@ with the distribution of the experiment B.
 
 from pandas import set_option,read_csv, read_table, DataFrame
 from os import environ, listdir, path, mkdir
-from numpy import random, save, array
+from numpy import random, save, array, inf, nan
 from collections import Counter
 from random import seed
 
@@ -23,16 +23,17 @@ from tensorflow.keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
 from keras.layers import GRU, Bidirectional, Dense, Dropout, Input
 from tensorflow.keras.callbacks import EarlyStopping, TensorBoard
+from keras.preprocessing.sequence import pad_sequences
 
 
 # Ignore the Tensorflow Informations and Warning
 environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 
 # Directory of the Dataset
-base_dir = '../../data/'
+base_dir = '../data/'
 
 # Define the labels
-labels = read_csv('../../public_labels.csv')
+labels = read_csv('../public_labels.csv')
 
 # List of all the users in the dataset
 users = ["user7", "user9", "user12", "user15", "user16", "user20","user21","user23","user29","user35"]
@@ -87,7 +88,7 @@ def normalisedOverTime(data):
     data = data.diff(axis = 0, periods = 1)
     # This function alters the first row with NaN values, since no diff. can be computed
     # for the 1st element in the df.
-    # This row will be removed to replace it by the duplicate of the second element. 
+    # This row will be removed to replace it by the duplicate of the second element.
     data.drop(0,axis=0,inplace=True)
     data.loc[-1] = data.loc[1]
     data.index = data.index + 1  # shifting index
@@ -96,6 +97,10 @@ def normalisedOverTime(data):
     data["dy"] = data["y"] / data["client timestamp"]
     # Remove the three columns not needed anymore, the timestamp and the mouse coordinates
     data.drop(["x","y", "client timestamp"],axis=1,inplace=True)
+    # handle obtained NaN values
+    data.replace([inf, -inf], nan, inplace=True)
+    data = data.fillna(method='ffill')
+    data = data.fillna(0)
     return data
 
 
@@ -145,6 +150,10 @@ def getIllegalData(user,numberIllegalData):
 def createDataset(user):
     X_dataset = []
     Y_dataset = []
+
+    sessions_to_pad_dx = []
+    sessions_to_pad_dy = []
+
     # Count the number of positive and negative data collected
     is_legal = 0
     is_illegal = 0
@@ -181,6 +190,13 @@ def createDataset(user):
                 i = 0
                 data = cleanSession(session,user)
                 if data[i:i+300].shape[0] < 300 :
+                    # Define the sessions to be padded
+                    data_tmp  = data[i:i+300].reset_index()
+                    # reset the index from 0 and remove the timesteps
+                    data_tmp = normalisedOverTime(data_tmp)
+                    # Data below 300 timestamps, normalised, it has x < 300 rows
+                    sessions_to_pad_dx.append(list(array(data_tmp["dx"])))
+                    sessions_to_pad_dy.append(list(array(data_tmp["dy"])))
                     break
                 else :
                     is_legal += 1
@@ -195,6 +211,19 @@ def createDataset(user):
                         break
                     else :
                         previous_data = data_tmp
+
+    # Padd the sessions to a number of 300 timestamps
+    # The sequences are pre padded with null values
+    paddedsession_dx = pad_sequences(sessions_to_pad_dx, maxlen=300)
+    paddedsession_dy = pad_sequences(sessions_to_pad_dy, maxlen=300)
+
+    # Add the padded sessions to the dataset
+    for i in range(0,len(sessions_to_pad_dy)):
+        is_legal += 1
+        data = DataFrame({"dx":paddedsession_dx[i], "dy":paddedsession_dy[i]})
+        X_dataset.append(array(data))
+        Y_dataset.append(0)
+
 
     # Compute how many illegal data sequences are needed to balance the dataset
     numberoflegalinput = Counter(Y_dataset)[0]

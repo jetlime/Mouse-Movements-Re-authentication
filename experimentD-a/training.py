@@ -5,9 +5,8 @@
 
 """
 This python script serves to train the models for every user
-with the distribution of the experiment B.
+with the distribution of the experiment D-a.
 """
-
 
 from pandas import set_option,read_csv, read_table, DataFrame
 from os import environ, listdir, path, mkdir
@@ -26,14 +25,15 @@ from tensorflow.keras.callbacks import EarlyStopping, TensorBoard
 from keras.preprocessing.sequence import pad_sequences
 
 
+
 # Ignore the Tensorflow Informations and Warning
 environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 
 # Directory of the Dataset
-base_dir = '../../data/'
+base_dir = '../data/'
 
 # Define the labels
-labels = read_csv('../../public_labels.csv')
+labels = read_csv('../public_labels.csv')
 
 # List of all the users in the dataset
 users = ["user7", "user9", "user12", "user15", "user16", "user20","user21","user23","user29","user35"]
@@ -48,7 +48,6 @@ random.seed(my_seed)
 # Set tensorflow random seed
 set_seed(my_seed)
 
-    
 def createGruModel(shape):
     model = Sequential([ Input(shape=shape) ])
     recurrent_block1 = GRU(200, activation="tanh", return_sequences=True)
@@ -65,6 +64,9 @@ def createGruModel(shape):
     return model
 
 
+# Define the labels
+labels = read_csv('../../public_labels.csv')
+
 # Fetch the session file, to transform it into a modifible dataframe
 def cleanSession(session,user):
     data = read_table(path.join(base_dir, str(user), session), sep=',')
@@ -76,7 +78,6 @@ def cleanSession(session,user):
     data.drop("state", axis=1, inplace=True)
     data.drop('record timestamp', axis=1, inplace=True)
     return data
-
 
 # Normalise the mouse coordinates over time
 def normalisedOverTime(data):
@@ -228,20 +229,23 @@ def createDataset(user):
     # Compute how many illegal data sequences are needed to balance the dataset
     numberoflegalinput = Counter(Y_dataset)[0]
     # Obtain and add the negative data obtained from legal data of random other users
-    randomnegativesamples = getIllegalData(user, numberoflegalinput-is_illegal)
+    # To obtain double the amount
+    randomnegativesamples = getIllegalData(user, (2*numberoflegalinput)-is_illegal)
     for sess in randomnegativesamples:
         X_dataset.append(sess)
         Y_dataset.append(1)
     return X_dataset, Y_dataset
 
+class_weight = {0: 1,
+                1: 2}
 
 if __name__ == "__main__":
     # Create the needed directories for this experiment
     print("...Creating necessary folders...")
-    mkdir("models")
-    mkdir("models-testingsets")
-    mkdir("models-Tensorboard")
-    # For every user, the models will be created and trained with 5 datasets
+    mkdir("models-new")
+    mkdir("models-new-testingsets")
+    mkdir("models-new-Tensorboard")
+    # For every user, the models will be created and trained with 5 dataset
     # (which each have different training and testing sets)
     # in order to obtain a more widespread view of the model when it comes to 
     # evaluating it
@@ -262,12 +266,12 @@ if __name__ == "__main__":
             model = createGruModel(X_train[0].shape)
             model.compile(loss='binary_crossentropy', optimizer=Adam(0.0001), metrics=['accuracy'])
             # Train the model
-            model.fit(X_train, Y_train, epochs = 400, batch_size =150, verbose = 1, shuffle = True, validation_split=0.1, callbacks = [EarlyStopping(patience=40, verbose=1,restore_best_weights=True, monitor='val_loss', mode='auto'),TensorBoard("models-Tensorboard/{}".format(NAME), profile_batch=0),])
+            model.fit(X_train, Y_train, epochs = 400, batch_size =150, verbose = 1, shuffle = True, validation_split=0.1,class_weight=class_weight ,callbacks = [EarlyStopping(patience=40, verbose=1,restore_best_weights=True, monitor='val_loss', mode='auto'),TensorBoard("models-Tensorboard/{}".format(NAME), profile_batch=0),])
             # Save the model once training is done.
-            model_file = path.join("models", '{}.h5'.format(NAME))
+            model_file = path.join("models-new", '{}.h5'.format(NAME))
             model.save(model_file)
             # Save the testing dataset into a txt file to be used for correct validation 
-            save(path.join("models-testingsets", NAME + "-test-X"), X_test)
-            save(path.join("models-testingsets", NAME + "-test-Y"), Y_test)
+            save(path.join("models-new-testingsets", NAME + "-test-X"), X_test)
+            save(path.join("models-new-testingsets", NAME + "-test-Y"), Y_test)
             print('Model saved as {}'.format(model_file))
             print('Testing Set saved in a numpy file.')

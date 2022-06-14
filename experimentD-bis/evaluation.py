@@ -47,9 +47,6 @@ def eval_binary_classifier(y_true, y_pred, class_weights=None):
         'eer':EER
     }
 
-# Directory of the saved models
-base_dir = "models"
-
 models_auc = {"7": [], "9":[], "12":[], "15":[],"16":[],"20":[], "21":[], "23":[],'29':[],"35":[]}
 models_acc = {"7": [], "9":[], "12":[], "15":[],"16":[], "20":[], "21":[], "23":[],'29':[],"35":[]}
 models_eer = {"7": [], "9":[], "12":[], "15":[],"16":[], "20":[], "21":[], "23":[],'29':[],"35":[]}
@@ -58,8 +55,8 @@ models_acc_mean = {}
 models_eer_mean = {}
 
 # For every saved model, we compute the three metrics, and save them in the given dictionarries
-for model_file_name in listdir(base_dir):
-    loaded_model = keras.models.load_model(path.join(base_dir, model_file_name))
+for model_file_name in listdir("models"):
+    loaded_model = keras.models.load_model(path.join("models", model_file_name))
     # obtain the testing set from the given model
     X_test = load(path.join("models-testingsets", model_file_name[:-3] + "-test-X.npy"))
     Y_test = load(path.join("models-testingsets", model_file_name[:-3] + "-test-Y.npy"))
