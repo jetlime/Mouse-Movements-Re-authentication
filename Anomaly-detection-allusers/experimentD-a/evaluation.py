@@ -80,8 +80,7 @@ for model in models_eer:
 
 print("     EER, Balanced Accuracy, Weighted AUC score")
 for user in models_auc:
-    print("\\hline")
-    print("{}& {}& {}& {}\\\\".format(user, round(models_eer_mean[user],4), round(models_acc_mean[user],4), round(models_auc_mean[user],4)))
+    print("User {}, {}, {}, {}".format(user, round(models_eer_mean[user],4), round(models_acc_mean[user],4), round(models_auc_mean[user],4)))
 
 print("Average over all users:")
 lst = []
