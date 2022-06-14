@@ -19,7 +19,6 @@ from statistics import mean
 # Ignore the Tensorflow Informations and Warnings
 environ["TF_CPP_MIN_LOG_LEVEL"] = "1"
 
-
 def find_EER(far, frr):
    far_optimum = 0
    frr_optimum = 0
@@ -48,8 +47,6 @@ def eval_binary_classifier(y_true, y_pred, class_weights=None):
         'eer':EER
     }
 
-base_dir = "models"
-
 models_auc = {"7": [], "9":[], "12":[], "15":[],"16":[],"20":[], "21":[], "23":[],'29':[],"35":[]}
 models_acc = {"7": [], "9":[], "12":[], "15":[],"16":[],"20":[], "21":[], "23":[],'29':[],"35":[]}
 models_eer = {"7": [], "9":[], "12":[], "15":[],"16":[],"20":[], "21":[], "23":[],'29':[],"35":[]}
@@ -58,8 +55,8 @@ models_acc_mean = {}
 models_eer_mean = {}
 
 # For every saved model, we compute the three metrics, and save them in the given dictionarries
-for model_file_name in listdir(base_dir):
-    loaded_model = keras.models.load_model(path.join(base_dir, model_file_name))
+for model_file_name in listdir("models"):
+    loaded_model = keras.models.load_model(path.join("models", model_file_name))
     # obtain the testing set from the given model
     X_test = load(path.join("models-testingsets", model_file_name[:-3] + "-test-X.npy"))
     Y_test = load(path.join("models-testingsets", model_file_name[:-3] + "-test-Y.npy"))
@@ -83,7 +80,7 @@ for model in models_eer:
 
 print("     EER,Accuracy, AUC score")
 for user in models_auc:
-    print("User {}, {}, {}, {}".format(user, round(models_eer_mean[user],4), round(models_acc_mean[user],4), round(models_auc_mean[user],4)))
+    print("user {}, {}, {}, {}".format(user, round(models_eer_mean[user],4), round(models_acc_mean[user],4), round(models_auc_mean[user],4)))
 
 print("Average over all users:")
 lst = []

@@ -47,9 +47,6 @@ def eval_binary_classifier(y_true, y_pred, class_weights=None):
         'eer':EER
     }
 
-# Directory of the saved models
-base_dir = "models"
-
 models_auc = {"7": [], "9":[], "12":[], "15":[],"16":[],"20":[], "21":[], "23":[],'29':[],"35":[]}
 models_acc = {"7": [], "9":[], "12":[], "15":[],"16":[], "20":[], "21":[], "23":[],'29':[],"35":[]}
 models_eer = {"7": [], "9":[], "12":[], "15":[],"16":[], "20":[], "21":[], "23":[],'29':[],"35":[]}
@@ -58,18 +55,18 @@ models_acc_mean = {}
 models_eer_mean = {}
 
 # For every saved model, we compute the three metrics, and save them in the given dictionarries
-for model_file_name in listdir(base_dir):
-    loaded_model = keras.models.load_model(path.join(base_dir, model_file_name))
+for model_file_name in listdir("models"):
+    loaded_model = keras.models.load_model(path.join("models", model_file_name))
     # obtain the testing set from the given model
     X_test = load(path.join("models-testingsets", model_file_name[:-3] + "-test-X.npy"))
     Y_test = load(path.join("models-testingsets", model_file_name[:-3] + "-test-Y.npy"))
-    for user in models_acc:
-        if user in model_file_name:
-            Y_pred = loaded_model.predict(X_test).ravel()
-            metrics = eval_binary_classifier(Y_test,Y_pred)
-            models_auc[user].append(metrics["auc_weighted"])
-            models_acc[user].append(metrics["balanced_acc"])
-            models_eer[user].append(metrics["eer"])
+     # Extract the user id
+    user = model_file_name.split("-")[0].split("r")[1]
+    Y_pred = loaded_model.predict(X_test).ravel()
+    metrics = eval_binary_classifier(Y_test,Y_pred)
+    models_auc[user].append(metrics["auc_weighted"])
+    models_acc[user].append(metrics["balanced_acc"])
+    models_eer[user].append(metrics["eer"])
 
 for model in models_auc:
     models_auc_mean[model] = mean(models_auc[model])
@@ -83,13 +80,14 @@ for model in models_eer:
 
 print("     EER, Balanced Accuracy, Weighted AUC score")
 for user in models_auc:
-    print("User {}, {}, {}, {}".format(user, round(models_eer_mean[user],4), round(models_acc_mean[user],4), round(models_auc_mean[user],4)))
+    print("\\hline")
+    print("{}& {}& {}& {}\\\\".format(user, round(models_eer_mean[user],4), round(models_acc_mean[user],4), round(models_auc_mean[user],4)))
 
 print("Average over all users:")
 lst = []
 for model in models_auc_mean:
     lst.append(models_auc_mean[model])
-print("EER avg.: " + str(round(mean(lst),4)))
+print("Weighted AUC avg.: " + str(round(mean(lst),4)))
 
 lst=[]
 
@@ -101,4 +99,4 @@ lst = []
 
 for model in models_eer_mean:
     lst.append(models_eer_mean[model])
-print("Weighted AUC score avg: "+ str(round(mean(lst),4)))
+print("EER avg: "+ str(round(mean(lst),4)))

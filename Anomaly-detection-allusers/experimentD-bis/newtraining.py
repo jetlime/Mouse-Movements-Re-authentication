@@ -5,7 +5,7 @@
 
 """
 This python script serves to train the models for every user
-with the distribution of the experiment D-a.
+with the distribution of the experiment D-bis.
 """
 
 from pandas import set_option,read_csv, read_table, DataFrame
@@ -191,13 +191,6 @@ def createDataset(user):
                 i = 0
                 data = cleanSession(session,user)
                 if data[i:i+300].shape[0] < 300 :
-                    # Define the sessions to be padded
-                    data_tmp  = data[i:i+300].reset_index()
-                    # reset the index from 0 and remove the timesteps
-                    data_tmp = normalisedOverTime(data_tmp)
-                    # Data below 300 timestamps, normalised, it has x < 300 rows
-                    sessions_to_pad_dx.append(list(array(data_tmp["dx"])))
-                    sessions_to_pad_dy.append(list(array(data_tmp["dy"])))
                     break
                 else :
                     is_legal += 1
@@ -212,19 +205,6 @@ def createDataset(user):
                         break
                     else :
                         previous_data = data_tmp
-
-    # Padd the sessions to a number of 300 timestamps
-    # The sequences are pre padded with null values
-    paddedsession_dx = pad_sequences(sessions_to_pad_dx, maxlen=300)
-    paddedsession_dy = pad_sequences(sessions_to_pad_dy, maxlen=300)
-
-    # Add the padded sessions to the dataset
-    for i in range(0,len(sessions_to_pad_dy)):
-        is_legal += 1
-        data = DataFrame({"dx":paddedsession_dx[i], "dy":paddedsession_dy[i]})
-        X_dataset.append(array(data))
-        Y_dataset.append(0)
-
 
     # Compute how many illegal data sequences are needed to balance the dataset
     numberoflegalinput = Counter(Y_dataset)[0]
