@@ -124,18 +124,18 @@ def getIllegalData(user,numberIllegalData):
             # get the legal session from the randomly chosen user
             if sessionIsIllegal(labels, session) == 0:
                 i = 0
-                if data[i:i+400].shape[0] < 400 :
+                if data[i:i+600].shape[0] < 600 :
                     break  
                 if is_legal >= numberIllegalData :
                     break
                 else :
                     is_legal += 1
-                    data_tmp  = data[i:i+400].reset_index()
+                    data_tmp  = data[i:i+600].reset_index()
                     # reset the index from 0 and remove the timesteps
                     data_tmp = normalisedOverTime(data_tmp)
                     sessions_to_return.append(data_tmp)
                     X_dataset.append(array(data_tmp))
-                    i += 400
+                    i += 600
     return X_dataset
 
 
@@ -160,34 +160,34 @@ def createDataset(user):
             while True :
                 if is_illegal > 10000 :
                     break
-                # If the reminding data has less then 400 timestamps then it is not considered
-                if data[i:i+400].shape[0] < 400 :
+                # If the reminding data has less then 600 timestamps then it is not considered
+                if data[i:i+600].shape[0] < 600 :
                     break
                 else :
-                    # Once the session is considered, 400 timestamps are
+                    # Once the session is considered, 600 timestamps are
                     # stripped apart to create a new entry in our Dataset
                     is_illegal += 1
-                    data_tmp  = data[i:i+400].reset_index()
+                    data_tmp  = data[i:i+600].reset_index()
                     # reset the index from 0 and remove the timesteps
                     data_tmp = normalisedOverTime(data_tmp)
                     X_dataset.append(array(data_tmp))
                     # The corresponding label is defined to indicate it is a illegal mouse movement session
                     Y_dataset.append(1)
-                    i += 400
+                    i += 600
         # If the session is legal
         else :
             previous_data = DataFrame()
             while True:
                 i = 0
                 data = cleanSession(session,user)
-                if data[i:i+400].shape[0] < 400 :
+                if data[i:i+600].shape[0] < 600 :
                     break
                 else :
                     is_legal += 1
-                    data_tmp  = data[i:i+400].reset_index()
+                    data_tmp  = data[i:i+600].reset_index()
                     # reset the index from 0 and remove the timesteps
                     data_tmp = normalisedOverTime(data_tmp)
-                    i += 400
+                    i += 600
                     X_dataset.append(array(data_tmp))
                     # Definet the legal label
                     Y_dataset.append(0)
