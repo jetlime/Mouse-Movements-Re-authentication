@@ -222,9 +222,9 @@ class_weight = {0: 1,
 if __name__ == "__main__":
     # Create the needed directories for this experiment
     print("...Creating necessary folders...")
-    mkdir("models-new")
-    mkdir("models-new-testingsets")
-    mkdir("models-new-Tensorboard")
+    mkdir("models")
+    mkdir("models-testingsets")
+    mkdir("models-Tensorboard")
     # For every user, the models will be created and trained with 5 dataset
     # (which each have different training and testing sets)
     # in order to obtain a more widespread view of the model when it comes to 
@@ -248,10 +248,10 @@ if __name__ == "__main__":
             # Train the model
             model.fit(X_train, Y_train, epochs = 400, batch_size =150, verbose = 1, shuffle = True, validation_split=0.1,class_weight=class_weight ,callbacks = [EarlyStopping(patience=40, verbose=1,restore_best_weights=True, monitor='val_loss', mode='auto'),TensorBoard("models-Tensorboard/{}".format(NAME), profile_batch=0),])
             # Save the model once training is done.
-            model_file = path.join("models-new", '{}.h5'.format(NAME))
+            model_file = path.join("models", '{}.h5'.format(NAME))
             model.save(model_file)
             # Save the testing dataset into a txt file to be used for correct validation 
-            save(path.join("models-new-testingsets", NAME + "-test-X"), X_test)
-            save(path.join("models-new-testingsets", NAME + "-test-Y"), Y_test)
+            save(path.join("models-testingsets", NAME + "-test-X"), X_test)
+            save(path.join("models-testingsets", NAME + "-test-Y"), Y_test)
             print('Model saved as {}'.format(model_file))
             print('Testing Set saved in a numpy file.')
