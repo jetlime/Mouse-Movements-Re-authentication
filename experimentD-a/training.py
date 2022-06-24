@@ -130,18 +130,18 @@ def getIllegalData(user,numberIllegalData):
             # get the legal session from the randomly chosen user
             if sessionIsIllegal(labels, session) == 0:
                 i = 0
-                if data[i:i+400].shape[0] < 400 :
+                if data[i:i+600].shape[0] < 600 :
                     break  
                 if is_legal >= numberIllegalData :
                     break
                 else :
                     is_legal += 1
-                    data_tmp  = data[i:i+400].reset_index()
+                    data_tmp  = data[i:i+600].reset_index()
                     # reset the index from 0 and remove the timesteps
                     data_tmp = normalisedOverTime(data_tmp)
                     sessions_to_return.append(data_tmp)
                     X_dataset.append(array(data_tmp))
-                    i += 400
+                    i += 600
     return X_dataset
 
 
@@ -170,41 +170,41 @@ def createDataset(user):
             while True :
                 if is_illegal > 10000 :
                     break
-                # If the reminding data has less then 400 timestamps then it is not considered
-                if data[i:i+400].shape[0] < 400 :
+                # If the reminding data has less then 600 timestamps then it is not considered
+                if data[i:i+600].shape[0] < 600 :
                     break
                 else :
-                    # Once the session is considered, 400 timestamps are
+                    # Once the session is considered, 600 timestamps are
                     # stripped apart to create a new entry in our Dataset
                     is_illegal += 1
-                    data_tmp  = data[i:i+400].reset_index()
+                    data_tmp  = data[i:i+600].reset_index()
                     # reset the index from 0 and remove the timesteps
                     data_tmp = normalisedOverTime(data_tmp)
                     X_dataset.append(array(data_tmp))
                     # The corresponding label is defined to indicate it is a illegal mouse movement session
                     Y_dataset.append(1)
-                    i += 400
+                    i += 600
         # If the session is legal
         else :
             previous_data = DataFrame()
             while True:
                 i = 0
                 data = cleanSession(session,user)
-                if data[i:i+400].shape[0] < 400 :
+                if data[i:i+600].shape[0] < 600 :
                     # Define the sessions to be padded
-                    data_tmp  = data[i:i+400].reset_index()
+                    data_tmp  = data[i:i+600].reset_index()
                     # reset the index from 0 and remove the timesteps
                     data_tmp = normalisedOverTime(data_tmp)
-                    # Data below 400 timestamps, normalised, it has x < 400 rows
+                    # Data below 600 timestamps, normalised, it has x < 600 rows
                     sessions_to_pad_dx.append(list(array(data_tmp["dx"])))
                     sessions_to_pad_dy.append(list(array(data_tmp["dy"])))
                     break
                 else :
                     is_legal += 1
-                    data_tmp  = data[i:i+400].reset_index()
+                    data_tmp  = data[i:i+600].reset_index()
                     # reset the index from 0 and remove the timesteps
                     data_tmp = normalisedOverTime(data_tmp)
-                    i += 400
+                    i += 600
                     X_dataset.append(array(data_tmp))
                     # Definet the legal label
                     Y_dataset.append(0)
@@ -213,10 +213,10 @@ def createDataset(user):
                     else :
                         previous_data = data_tmp
 
-    # Padd the sessions to a number of 400 timestamps
+    # Padd the sessions to a number of 600 timestamps
     # The sequences are pre padded with null values
-    paddedsession_dx = pad_sequences(sessions_to_pad_dx, maxlen=400)
-    paddedsession_dy = pad_sequences(sessions_to_pad_dy, maxlen=400)
+    paddedsession_dx = pad_sequences(sessions_to_pad_dx, maxlen=600)
+    paddedsession_dy = pad_sequences(sessions_to_pad_dy, maxlen=600)
 
     # Add the padded sessions to the dataset
     for i in range(0,len(sessions_to_pad_dy)):
@@ -242,9 +242,9 @@ class_weight = {0: 1,
 if __name__ == "__main__":
     # Create the needed directories for this experiment
     print("...Creating necessary folders...")
-    mkdir("models-new")
-    mkdir("models-new-testingsets")
-    mkdir("models-new-Tensorboard")
+    mkdir("models")
+    mkdir("models-testingsets")
+    mkdir("models-Tensorboard")
     # For every user, the models will be created and trained with 5 dataset
     # (which each have different training and testing sets)
     # in order to obtain a more widespread view of the model when it comes to 
@@ -271,7 +271,7 @@ if __name__ == "__main__":
             model_file = path.join("models-new", '{}.h5'.format(NAME))
             model.save(model_file)
             # Save the testing dataset into a txt file to be used for correct validation 
-            save(path.join("models-new-testingsets", NAME + "-test-X"), X_test)
-            save(path.join("models-new-testingsets", NAME + "-test-Y"), Y_test)
+            save(path.join("models-testingsets", NAME + "-test-X"), X_test)
+            save(path.join("models-testingsets", NAME + "-test-Y"), Y_test)
             print('Model saved as {}'.format(model_file))
             print('Testing Set saved in a numpy file.')
