@@ -5,7 +5,7 @@
 
 """
 This python script serves to train the models for every user
-with the distribution of the experiment B.
+with the distribution of the experiment C.
 """
 
 
