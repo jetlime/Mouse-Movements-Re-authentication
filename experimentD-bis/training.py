@@ -63,10 +63,6 @@ def createGruModel(shape):
     model.add(Dense(1, activation='sigmoid'))
     return model
 
-
-# Define the labels
-labels = read_csv('../../public_labels.csv')
-
 # Fetch the session file, to transform it into a modifible dataframe
 def cleanSession(session,user):
     data = read_table(path.join(base_dir, str(user), session), sep=',')
