@@ -44,6 +44,7 @@ Tensorboard is reporting the results on a localhost webpage, once the following 
 ## Author
 
 Paul Houssel - Student of the University of Luxembourg
+
 Luis A. Leiva - Assistant professor in computer science, University of Luxembourg
 
 ## Acknowledgements 
