@@ -44,10 +44,13 @@ Tensorboard is reporting the results on a localhost webpage, once the following 
 ## Author
 
 Paul Houssel - Student of the University of Luxembourg
+Luis A. Leiva - Assistant professor in computer science, University of Luxembourg
 
-## Acknowledgements and References
+## Acknowledgements 
 
-The work was supported by the University of Luxembourg and Luis A. Leiva
+This work was supported by the Horizon 2020 FET program of the European Union (grant CHIST-ERA-20-BCI-001) and the European Innovation Council Pathfinder program (SYMBIOTIK project).
+
+## References
 
 - The dataset used in this work is available on Github, [source](https://github.com/balabit/Mouse-Dynamics-Challenge).
 - Image used in the section entitled, **Evaluating the model** , [source](https://www.tensorflow.org/tensorboard).
