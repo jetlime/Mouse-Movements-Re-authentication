@@ -1,7 +1,9 @@
 # User authentication based on Mouse Movements  
 This project presents a solution to authentify users based on their mouse movements with the design of a 
-Gated Recurrent Unit (GRU) classifier that is able to differentiate imposters from the actual user. 
-In the report of the BSP, we defined and reported the results obtained in the different empirical experiments. In order to make our research reproducable and verifiable, we published the code to train and evaluate the models for every experiment. 
+Gated Recurrent Unit (GRU) classifier that is able to differentiate imposters from the actual user.
+Our solution is based on the [Balabit](https://github.com/balabit/Mouse-Dynamics-Challenge) dataset.
+
+We publish the code required to reproduce reported experimental results to ensure our research is reproducable and verifiable.
 
 This repository is licensed under the MIT license.
 ## Requirements
@@ -32,11 +34,6 @@ This scipt will report the average EER, Accuracy and AUC score of the given expe
 - Using Tensorboard:
 
 By using Tensorboard we are able to visualise the training history and metrics in function of the training iterations and epochs. 
-
-![Tensorboard Overview](https://user-images.githubusercontent.com/29337128/170961001-958d7f43-f5b3-4312-8926-889b91a4131d.png)
-
-
-
 Tensorboard is reporting the results on a localhost webpage, once the following command is executed,
 
 ```tensorboard --logdir ./experiment<ExperimentID>/models-Tensorboard```
@@ -51,7 +48,3 @@ Luis A. Leiva - Assistant professor in computer science, University of Luxembour
 
 This work was supported by the Horizon 2020 FET program of the European Union (grant CHIST-ERA-20-BCI-001) and the European Innovation Council Pathfinder program (SYMBIOTIK project).
 
-## References
-
-- The dataset used in this work is available on Github, [source](https://github.com/balabit/Mouse-Dynamics-Challenge).
-- Image used in the section entitled, **Evaluating the model** , [source](https://www.tensorflow.org/tensorboard).
