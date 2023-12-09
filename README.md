@@ -61,7 +61,5 @@ Luis A. Leiva - Assistant professor in computer science, University of Luxembour
 
 ## Acknowledgements 
 
-This work was supported by the Horizon 2020 FET program of the European Union (grant CHIST-ERA-20-BCI-001) and the European Innovation Council Pathfinder program (SYMBIOTIK project).
-
-
-
+This work is supported by the Horizon 2020 FET program of the European Union through the ERA-NET Cofund funding (BANANA, grant CHIST-ERA-20-BCI-001)
+and Horizon Europe's European Innovation Council through the Pathfinder program (SYMBIOTIK, grant 101071147).
