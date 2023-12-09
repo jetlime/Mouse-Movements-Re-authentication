@@ -38,6 +38,21 @@ Tensorboard is reporting the results on a localhost webpage, once the following 
 
 ```tensorboard --logdir ./experiment<ExperimentID>/models-Tensorboard```
 
+## Citation
+
+If you use our proposed solution, or experimental results, we ask that you
+cite the following paper as a reference:
+
+```
+@article{,
+  title={User Re-authentication via Mouse Movements and Recurrent Neural Networks},
+  author={Paul R. B. Houssel and Luis A. Leiva},
+  booktitle={ICISSP},
+  year={2024}
+}
+```
+
+
 ## Author
 
 Paul Houssel - Student of the University of Luxembourg
@@ -47,4 +62,6 @@ Luis A. Leiva - Assistant professor in computer science, University of Luxembour
 ## Acknowledgements 
 
 This work was supported by the Horizon 2020 FET program of the European Union (grant CHIST-ERA-20-BCI-001) and the European Innovation Council Pathfinder program (SYMBIOTIK project).
+
+
 
