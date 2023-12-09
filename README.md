@@ -44,7 +44,7 @@ If you use our proposed solution, or experimental results, we ask that you
 cite the following paper as a reference:
 
 ```
-@article{,
+@article{rnnmousereauthentication-houssel-2024,
   title={User Re-authentication via Mouse Movements and Recurrent Neural Networks},
   author={Paul R. B. Houssel and Luis A. Leiva},
   booktitle={ICISSP},
